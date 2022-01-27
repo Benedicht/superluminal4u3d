@@ -1,0 +1,14 @@
+{
+  "name": "com.superluminal.instrumentation",
+  "displayName": "Superluminal for Unity3D",
+  "version": "1.0.0",
+  "unity": "2019.3",
+  "keywords": ["superluminal", "performance", "profiler"],
+  "description": "This is a dynamic wrapper to use local Superluminal installation to use the Superluminal Performance API from Unity3D windows builds.",
+  "dependencies": {},
+  "author": {
+    "name": "Tivadar György Nagy",
+    "email": "besthttp@gmail.com",
+    "url": "https://benedicht.github.io/"
+  }
+}
