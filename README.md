@@ -23,7 +23,7 @@ Mark your code with `Superluminal.BeginEvent()`/`EndEvent()`:
 Superluminal.BeginEvent("event name", "optional additional data", UnityEngine.Color.red);
 try
 {
-	// Add your code here
+    // Add your code here
 }
 finally
 {
@@ -35,7 +35,7 @@ Or with a more compact syntax using `SuperluminalEvent`:
 ```c#
 using (new SuperluminalEvent("event name", "optional additional data", UnityEngine.Color.red))
 {
-	// Add your code here
+    // Add your code here
 }
 ```
 
