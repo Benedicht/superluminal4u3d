@@ -8,7 +8,7 @@ A working installation of [Superluminal](https://www.superluminal.eu) in a defau
 
 ## Installation
 
-Following the steps in the [Installing from a Git URL](https://docs.unity3d.com/Manual/upm-ui-giturl.html) you can use the `git@github.com:Benedicht/superluminal4u3d.git` URL.
+Following the steps in the [Installing from a Git URL](https://docs.unity3d.com/Manual/upm-ui-giturl.html) you can use the `https://github.com/Benedicht/superluminal4u3d.git` URL choosing the `Add package from git URL...` menuitem.
 
 ## Usage
 
