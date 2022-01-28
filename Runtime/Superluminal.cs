@@ -1,7 +1,6 @@
 using System.IO;
 using System;
 using System.Runtime.InteropServices;
-using System.Buffers;
 using System.Text;
 
 // Documentation, values and functions are from the PerformanceAPI.h, PerformanceAPI_capi.h and PerformanceAPI_loader.h files.
@@ -12,15 +11,15 @@ using System.Text;
 public struct SuperluminalEvent : IDisposable
 {
     public SuperluminalEvent(string id)
-        :this(id, null, Superluminal.DefaultColor)
-    {}
+        : this(id, null, Superluminal.DefaultColor)
+    { }
 
     public SuperluminalEvent(string id, string data)
         : this(id, data, Superluminal.DefaultColor)
-    {}
+    { }
 
     public SuperluminalEvent(string id, string data, UnityEngine.Color color)
-        :this(id, data, FromColor(color))
+        : this(id, data, FromColor(color))
     {
 
     }
@@ -62,10 +61,23 @@ public unsafe static class Superluminal
 
     private static volatile bool _isInitialized = false;
     private static IntPtr _lib = IntPtr.Zero;
+
+#if UNITY_2021_2_OR_NEWER
     private static delegate* unmanaged[Cdecl]<uint, PerformanceAPI_Functions*, uint> PerformanceAPI_GetAPI;
     private static delegate* unmanaged[Cdecl]<byte*, ushort, void> PerformanceAPI_SetCurrentThreadNameN;
     private static delegate* unmanaged[Cdecl]<char*, ushort, char*, ushort, uint, void> PerformanceAPI_BeginEventWideN;
     private static delegate* unmanaged[Cdecl]<PerformanceAPI_SuppressTailCallOptimization> PerformanceAPI_EndEvent;
+#else
+    private static PerformanceAPI_GetAPI_Delegate PerformanceAPI_GetAPI;
+    private static PerformanceAPI_SetCurrentThreadNameN_Delegate PerformanceAPI_SetCurrentThreadNameN;
+    private static PerformanceAPI_BeginEventWideN_Delegate PerformanceAPI_BeginEventWideN;
+    private static PerformanceAPI_EndEvent_Delegate PerformanceAPI_EndEvent;
+
+    delegate uint PerformanceAPI_GetAPI_Delegate(uint version, PerformanceAPI_Functions* functions);
+    delegate void PerformanceAPI_SetCurrentThreadNameN_Delegate(byte* name, ushort nameLength);
+    delegate void PerformanceAPI_BeginEventWideN_Delegate(char* id, ushort idLength, char* data, ushort dataLength, uint color);
+    delegate PerformanceAPI_SuppressTailCallOptimization PerformanceAPI_EndEvent_Delegate();
+#endif
 
     private static void Init()
     {
@@ -92,7 +104,11 @@ public unsafe static class Superluminal
             return;
         }
 
+#if UNITY_2021_2_OR_NEWER
         PerformanceAPI_GetAPI = (delegate* unmanaged[Cdecl]<uint, PerformanceAPI_Functions*, uint>)GetProcAddress(_lib, "PerformanceAPI_GetAPI");
+#else
+        PerformanceAPI_GetAPI = (PerformanceAPI_GetAPI_Delegate)Marshal.GetDelegateForFunctionPointer(GetProcAddress(_lib, "PerformanceAPI_GetAPI"), typeof(PerformanceAPI_GetAPI_Delegate));
+#endif
 
         if (PerformanceAPI_GetAPI == null)
         {
@@ -120,9 +136,15 @@ public unsafe static class Superluminal
             return;
         }
 
+#if UNITY_2021_2_OR_NEWER
         PerformanceAPI_SetCurrentThreadNameN = (delegate* unmanaged[Cdecl]<byte*, ushort, void>)functionPointers.SetCurrentThreadNameN;
         PerformanceAPI_BeginEventWideN = (delegate* unmanaged[Cdecl]<char*, ushort, char*, ushort, uint, void>)functionPointers.BeginEventWideN;
         PerformanceAPI_EndEvent = (delegate* unmanaged[Cdecl]<PerformanceAPI_SuppressTailCallOptimization>)functionPointers.EndEvent;
+#else
+        PerformanceAPI_SetCurrentThreadNameN = (PerformanceAPI_SetCurrentThreadNameN_Delegate)Marshal.GetDelegateForFunctionPointer(functionPointers.SetCurrentThreadNameN, typeof(PerformanceAPI_SetCurrentThreadNameN_Delegate));
+        PerformanceAPI_BeginEventWideN = (PerformanceAPI_BeginEventWideN_Delegate)Marshal.GetDelegateForFunctionPointer(functionPointers.BeginEventWideN, typeof(PerformanceAPI_BeginEventWideN_Delegate));
+        PerformanceAPI_EndEvent = (PerformanceAPI_EndEvent_Delegate)Marshal.GetDelegateForFunctionPointer(functionPointers.EndEvent, typeof(PerformanceAPI_EndEvent_Delegate));
+#endif
     }
 #endif
 
@@ -141,15 +163,10 @@ public unsafe static class Superluminal
         if (PerformanceAPI_SetCurrentThreadNameN == null)
             return;
 
-        var byteCount = Encoding.UTF8.GetByteCount(name);
+        var buffer = Encoding.UTF8.GetBytes(name);
 
-        var buffer = ArrayPool<byte>.Shared.Rent(byteCount);
-        Encoding.UTF8.GetBytes(name, buffer);
         fixed (byte* pName = buffer)
-        {
-            PerformanceAPI_SetCurrentThreadNameN(pName, (ushort)byteCount);
-        }
-        ArrayPool<byte>.Shared.Return(buffer);
+            PerformanceAPI_SetCurrentThreadNameN(pName, (ushort)buffer.Length);
 #endif
     }
 
@@ -206,6 +223,8 @@ public unsafe static class Superluminal
             FreeLibrary(_lib);
             _lib = IntPtr.Zero;
         }
+
+        _isInitialized = false;
 #endif
     }
 
@@ -231,22 +250,22 @@ public unsafe static class Superluminal
 
     unsafe struct PerformanceAPI_Functions
     {
-        public void* SetCurrentThreadName;
-        public void* SetCurrentThreadNameN;
-        public void* BeginEvent;
-        public void* BeginEventN;
-        public void* BeginEventWide;
-        public void* BeginEventWideN;
-        public void* EndEvent;
+        public IntPtr SetCurrentThreadName;
+        public IntPtr SetCurrentThreadNameN;
+        public IntPtr BeginEvent;
+        public IntPtr BeginEventN;
+        public IntPtr BeginEventWide;
+        public IntPtr BeginEventWideN;
+        public IntPtr EndEvent;
 
         public bool IsSet() =>
-            this.SetCurrentThreadNameN != null &&
-            this.SetCurrentThreadNameN != null &&
-            this.BeginEvent != null &&
-            this.BeginEventN != null &&
-            this.BeginEventWideN != null &&
-            this.BeginEventWideN != null &&
-            this.EndEvent != null;
+            this.SetCurrentThreadNameN != IntPtr.Zero &&
+            this.SetCurrentThreadNameN != IntPtr.Zero &&
+            this.BeginEvent != IntPtr.Zero &&
+            this.BeginEventN != IntPtr.Zero &&
+            this.BeginEventWideN != IntPtr.Zero &&
+            this.BeginEventWideN != IntPtr.Zero &&
+            this.EndEvent != IntPtr.Zero;
     }
 #endif
 }

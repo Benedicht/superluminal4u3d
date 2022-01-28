@@ -4,7 +4,7 @@ This is a dynamic wrapper around the [Superluminal Performance API](https://www.
 
 ## Prerequisites
 
-A working installation of [Superluminal](https://www.superluminal.eu) in a default Program Files forlder. Unity3D 2021.2 or newer for [Unmanaged function pointer support](https://docs.unity3d.com/2021.2/Documentation/Manual/CSharpCompiler.html).
+A working installation of [Superluminal](https://www.superluminal.eu) in a default Program Files forlder.
 
 ## Installation
 
@@ -38,6 +38,33 @@ using (new SuperluminalEvent("event name", "optional additional data", UnityEngi
     // Add your code here
 }
 ```
+
+## Example
+
+The following code:
+
+```c#
+public static void OnUpdate()
+{
+    using (new SuperluminalEvent("OnUpdate", UnityEngine.Time.frameCount.ToString("N0"), UnityEngine.Color.green))
+    {
+        RequestEventHelper.ProcessQueue();
+        ConnectionEventHelper.ProcessQueue();
+        ProtocolEventHelper.ProcessQueue();
+        PluginEventHelper.ProcessQueue();
+
+        BestHTTP.Extensions.Timer.Process();
+
+        if (heartbeats != null)
+            heartbeats.Update();
+
+        BufferPool.Maintain();
+    }
+}
+```
+
+Produces the following output in Superluminal:
+![OnUpdate Example](Documentation~/images/OnUpdateSample.png)
 
 ## Why not Superluminal Perf from Alexandre Mutel?
 
