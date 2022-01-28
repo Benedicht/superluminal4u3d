@@ -73,10 +73,10 @@ public unsafe static class Superluminal
     private static PerformanceAPI_BeginEventWideN_Delegate PerformanceAPI_BeginEventWideN;
     private static PerformanceAPI_EndEvent_Delegate PerformanceAPI_EndEvent;
 
-    delegate uint PerformanceAPI_GetAPI_Delegate(uint version, PerformanceAPI_Functions* functions);
-    delegate void PerformanceAPI_SetCurrentThreadNameN_Delegate(byte* name, ushort nameLength);
-    delegate void PerformanceAPI_BeginEventWideN_Delegate(char* id, ushort idLength, char* data, ushort dataLength, uint color);
-    delegate PerformanceAPI_SuppressTailCallOptimization PerformanceAPI_EndEvent_Delegate();
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate uint PerformanceAPI_GetAPI_Delegate(uint version, PerformanceAPI_Functions* functions);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate void PerformanceAPI_SetCurrentThreadNameN_Delegate(byte* name, ushort nameLength);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate void PerformanceAPI_BeginEventWideN_Delegate(char* id, ushort idLength, char* data, ushort dataLength, uint color);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate PerformanceAPI_SuppressTailCallOptimization PerformanceAPI_EndEvent_Delegate();
 #endif
 
     private static void Init()
