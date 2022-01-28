@@ -4,7 +4,7 @@ This is a dynamic wrapper around the [Superluminal Performance API](https://www.
 
 ## Prerequisites
 
-A working installation of [Superluminal](https://www.superluminal.eu) in a default Program Files forlder. Unity3D 2021.2 or newer for [Unmanaged function pointer support]((https://docs.unity3d.com/2021.2/Documentation/Manual/CSharpCompiler.html)).
+A working installation of [Superluminal](https://www.superluminal.eu) in a default Program Files forlder. Unity3D 2021.2 or newer for [Unmanaged function pointer support](https://docs.unity3d.com/2021.2/Documentation/Manual/CSharpCompiler.html).
 
 ## Installation
 
