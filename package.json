@@ -1,7 +1,7 @@
 {
   "name": "com.superluminal.instrumentation",
   "displayName": "Superluminal for Unity3D",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "unity": "2021.2",
   "keywords": ["superluminal", "performance", "profiler"],
   "description": "This is a dynamic wrapper to use local Superluminal installation to use the Superluminal Performance API from Unity3D windows builds.",

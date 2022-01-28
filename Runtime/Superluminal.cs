@@ -27,7 +27,7 @@ public struct SuperluminalEvent : IDisposable
 
     private static uint FromColor(UnityEngine.Color color)
     {
-        return (uint)((byte)(color.r * 256) << 24 | (byte)(color.g * 256) << 16 | (byte)(color.b * 256) << 8 | (byte)(color.a * 256));
+        return (uint)((byte)(color.r * 255) << 24 | (byte)(color.g * 255) << 16 | (byte)(color.b * 255) << 8 | (byte)(color.a * 255));
     }
 
     public SuperluminalEvent(string id, string data = null, uint color = Superluminal.DefaultColor)
